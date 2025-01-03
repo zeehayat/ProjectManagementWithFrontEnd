@@ -1,8 +1,9 @@
+
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
+  <div id="app">
+    <Menubar />
+    <router-view />
+  </div>
   <router-view/>
 </template>
 
@@ -26,5 +27,22 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+</style>
+<script>
+import Menubar from "./components/Menubar.vue";
+
+export default {
+  components: {
+    Menubar,
+  },
+};
+</script>
+
+<style>
+/* Optional global styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
 }
 </style>

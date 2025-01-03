@@ -2,7 +2,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CommunicationPlatformViewSet, ProjectViewSet, ProjectOwnerViewSet,
     RoleViewSet, UserRoleAssignmentViewSet, PermissionViewSet,
-    NotificationViewSet, UserNotificationPreferenceViewSet, TaskListCreateView, TaskDetailView
+    NotificationViewSet, UserNotificationPreferenceViewSet, TaskListCreateView, TaskDetailView, RoleListCreateView,
+    UserRoleAssignmentView, NotificationListView, NotificationMarkAsReadView
 )
 
 router = DefaultRouter()
@@ -22,6 +23,10 @@ urlpatterns = [
     path('projects/<int:pk>/', ProjectDetailView.as_view(), name='project-detail'),
     path('tasks/', TaskListCreateView.as_view(), name='task-list-create'),
     path('tasks/<int:pk>/', TaskDetailView.as_view(), name='task-detail'),
+    path('roles/', RoleListCreateView.as_view(), name='roles'),
+    path('user-roles/', UserRoleAssignmentView.as_view(), name='user-roles'),
+    path('notifications/', NotificationListView.as_view(), name='notifications'),
+    path('notifications/<int:pk>/read/', NotificationMarkAsReadView.as_view(), name='notification-mark-read'),
 ]
 
 urlpatterns = router.urls

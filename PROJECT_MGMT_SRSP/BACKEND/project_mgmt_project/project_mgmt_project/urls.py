@@ -22,6 +22,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+from project_management.views import TaskListCreateView, TaskDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +30,8 @@ urlpatterns = [
     path('api/', include('project_management.urls')),  # Replace 'your_app_name' with your app's name
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Login
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Refresh
+    path('tasks/', TaskListCreateView.as_view(), name='task-list-create'),
+    path('tasks/<int:pk>/', TaskDetailView.as_view(), name='task-detail'),
 
 
 ]
