@@ -1,20 +1,23 @@
 from rest_framework import status
-from rest_framework.viewsets import ModelViewSet
-from .permissions import HasPermission
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.generics import ListCreateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
 from .models import (
     CommunicationPlatform, Project, ProjectOwner, Role,
-    UserRoleAssignment, Permission, Notification, UserNotificationPreference, Task
+    UserRoleAssignment, Permission, Notification, UserNotificationPreference, Task, TaskExtensionRequest
 )
+
+from .permissions import HasPermission
 from .serializers import (
     CommunicationPlatformSerializer, ProjectSerializer, ProjectOwnerSerializer,
     RoleSerializer, UserRoleAssignmentSerializer, PermissionSerializer,
     NotificationSerializer, UserNotificationPreferenceSerializer, TaskSerializer
 )
+from .serializers import TaskExtensionRequestSerializer
 from .utils import create_task_notification
 
 
@@ -183,3 +186,15 @@ class NotificationMarkAsReadView(UpdateAPIView):
 
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user, is_read=False)
+
+class TaskListView(ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+class TaskDetailView(RetrieveUpdateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+class TaskExtensionRequestView(ListCreateAPIView):
+    queryset = TaskExtensionRequest.objects.all()
+    serializer_class = TaskExtensionRequestSerializer

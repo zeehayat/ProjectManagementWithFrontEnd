@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 
 # Communication Platforms
 class CommunicationPlatform(models.Model):
@@ -81,15 +83,38 @@ class UserNotificationPreference(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class Attachment(models.Model):
+    file = models.FileField(upload_to="attachments/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 class Task(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='tasks')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True, related_name='tasks')
-    due_date = models.DateField(null=True, blank=True)
-    status = models.CharField(max_length=20, default='Pending')
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="tasks")
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='tasks')
+    due_date = models.DateField(blank=True, null=True)
+    status = models.CharField(max_length=50, default='Pending')
+    assignee_notes = models.TextField(blank=True, null=True)
+    assigned_person_notes = models.TextField(blank=True, null=True)
+    gps_latitude = models.FloatField(blank=True, null=True)
+    gps_longitude = models.FloatField(blank=True, null=True)
+    attachments = models.ManyToManyField(Attachment, blank=True, related_name="tasks")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def is_late(self):
+        return self.due_date and self.status != "Completed" and self.due_date < timezone.now().date()
     def __str__(self):
         return self.name
+
+
+class TaskExtensionRequest(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="extension_requests")
+    requested_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    additional_days = models.PositiveIntegerField()
+    reason = models.TextField()
+    status = models.CharField(max_length=20,
+                              choices=[("Pending", "Pending"), ("Approved", "Approved"), ("Rejected", "Rejected")],
+                              default="Pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+

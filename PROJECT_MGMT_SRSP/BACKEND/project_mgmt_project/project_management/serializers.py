@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     CommunicationPlatform, Project, ProjectOwner, Role,
-    UserRoleAssignment, Permission, Notification, UserNotificationPreference, Task
+    UserRoleAssignment, Permission, Notification, UserNotificationPreference, Task, Attachment, TaskExtensionRequest
 )
 
 
@@ -49,7 +49,19 @@ class UserNotificationPreferenceSerializer(serializers.ModelSerializer):
 
 
 
+class AttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attachment
+        fields = "__all__"
+
 class TaskSerializer(serializers.ModelSerializer):
+    attachments = AttachmentSerializer(many=True, read_only=True)
+
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = "__all__"
+
+class TaskExtensionRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskExtensionRequest
+        fields = "__all__"
