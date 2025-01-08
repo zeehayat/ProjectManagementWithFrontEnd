@@ -190,10 +190,12 @@ class NotificationMarkAsReadView(UpdateAPIView):
 class TaskListView(ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
 
 class TaskDetailView(RetrieveUpdateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
 
 class TaskExtensionRequestView(ListCreateAPIView):
     queryset = TaskExtensionRequest.objects.all()
