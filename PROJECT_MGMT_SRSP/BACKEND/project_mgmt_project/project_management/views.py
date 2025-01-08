@@ -1,21 +1,22 @@
 from rest_framework import status
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
+from rest_framework.permissions import IsAdminUser
 from .models import (
     CommunicationPlatform, Project, ProjectOwner, Role,
-    UserRoleAssignment, Permission, Notification, UserNotificationPreference, Task, TaskExtensionRequest
+    UserRoleAssignment, Permission, Notification, UserNotificationPreference, Task, TaskExtensionRequest,
+User
 )
 
 from .permissions import HasPermission
 from .serializers import (
     CommunicationPlatformSerializer, ProjectSerializer, ProjectOwnerSerializer,
     RoleSerializer, UserRoleAssignmentSerializer, PermissionSerializer,
-    NotificationSerializer, UserNotificationPreferenceSerializer, TaskSerializer
+    NotificationSerializer, UserNotificationPreferenceSerializer, TaskSerializer, UserSerializer, CreateUserSerializer
 )
 from .serializers import TaskExtensionRequestSerializer
 from .utils import create_task_notification
@@ -192,11 +193,20 @@ class TaskListView(ListCreateAPIView):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
-class TaskDetailView(RetrieveUpdateAPIView):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
+# class TaskDetailView(RetrieveUpdateAPIView):
+#     queryset = Task.objects.all()
+#     serializer_class = TaskSerializer
+#     permission_classes = [IsAuthenticated]
 
 class TaskExtensionRequestView(ListCreateAPIView):
     queryset = TaskExtensionRequest.objects.all()
     serializer_class = TaskExtensionRequestSerializer
+
+class AddUserView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = CreateUserSerializer
+    permission_classes = [IsAdminUser]
+
+class UserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer  # For listing users (without passwords)

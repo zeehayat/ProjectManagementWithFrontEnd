@@ -4,7 +4,8 @@ from .views import (
     CommunicationPlatformViewSet, ProjectViewSet, ProjectOwnerViewSet,
     RoleViewSet, UserRoleAssignmentViewSet, PermissionViewSet,
     NotificationViewSet, UserNotificationPreferenceViewSet, TaskListCreateView, TaskDetailView,
-    RoleListCreateView, UserRoleAssignmentView, NotificationListView, NotificationMarkAsReadView
+    RoleListCreateView, UserRoleAssignmentView, NotificationListView, NotificationMarkAsReadView, AddUserView,
+    UserListView
 )
 from .views import ProjectListCreateView, ProjectDetailView
 
@@ -29,6 +30,8 @@ custom_urlpatterns = [
     path('user-roles/', UserRoleAssignmentView.as_view(), name='user-roles'),
     path('notifications/', NotificationListView.as_view(), name='notifications'),
     path('notifications/<int:pk>/read/', NotificationMarkAsReadView.as_view(), name='notification-mark-read'),
+    path('users/', UserListView.as_view(), name='user-list'),
+    path('users/add/', UserListView.as_view(), name='user-create'),
 ]
 
 # Combine router and custom paths

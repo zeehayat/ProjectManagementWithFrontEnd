@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import (
     CommunicationPlatform, Project, ProjectOwner, Role,
@@ -65,3 +66,17 @@ class TaskExtensionRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskExtensionRequest
         fields = "__all__"
+
+class CreateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username','email','password']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','username','email']

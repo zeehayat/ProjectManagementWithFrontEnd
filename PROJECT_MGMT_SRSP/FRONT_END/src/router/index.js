@@ -9,6 +9,8 @@ import ProjectAssignment from "../views/ProjectAssignment.vue";
 import TaskCreation from "../views/TaskCreation.vue";
 import TaskAssignment from "../views/TaskAssignment.vue";
 import TaskDetails from "../views/TaskDetails.vue";
+import AddUser from "@/views/AddUser.vue";
+import TaskList from "@/views/TaskList.vue";
 
 const routes = [
   { path: '/', name: 'Login', component: Login },
@@ -20,7 +22,10 @@ const routes = [
   { path: "/assign-project", component: ProjectAssignment },
   { path: "/create-task", component: TaskCreation },
   { path: "/assign-task", component: TaskAssignment },
-     { path: "/tasks/:id", component: TaskDetails },
+    { path: "/tasks", component: TaskList },
+
+    { path: "/add-user", component: AddUser },
+
 ];
 
 const router = createRouter({

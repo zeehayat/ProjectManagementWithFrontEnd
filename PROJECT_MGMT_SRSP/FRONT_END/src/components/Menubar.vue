@@ -18,6 +18,10 @@
         <li>
           <router-link to="/notifications" class="hover:underline">Notifications</router-link>
         </li>
+
+      <li><router-link to="/tasks">Tasks</router-link></li>
+      <li><router-link to="/add-user">Add User</router-link></li>
+
       </ul>
     </div>
   </nav>

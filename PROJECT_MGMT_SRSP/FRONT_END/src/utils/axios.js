@@ -13,7 +13,12 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken"); // Retrieve token from localStorage
     if (token) {
+        console.log("Adding token to request:", token);
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    else {
+              console.warn("No token found in localStorage!");
+
     }
     return config;
   },
