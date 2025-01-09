@@ -113,7 +113,7 @@ class ProjectDetailView(APIView):
             return Response({"error": "Project Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class TaskListCreateView(APIView):
+class TaskListCreateView(ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]

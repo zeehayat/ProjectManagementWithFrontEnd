@@ -9,11 +9,13 @@ import ProjectAssignment from "../views/ProjectAssignment.vue";
 import TaskCreation from "../views/TaskCreation.vue";
 import TaskAssignment from "../views/TaskAssignment.vue";
 import TaskDetails from "../views/TaskDetails.vue";
-import AddUser from "@/views/AddUser.vue";
-import TaskList from "@/views/TaskList.vue";
+import AddUser from "../views/AddUser.vue";
+import TaskList from "../views/TaskList.vue";
+import TestPage from "../views/TestPage.vue";
 
 const routes = [
   { path: '/', name: 'Login', component: Login },
+
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
     { path: "/roles", component: RoleList },
   { path: "/assign-role", component: AssignRole },
@@ -21,13 +23,17 @@ const routes = [
     { path: "/create-project", component: ProjectCreation },
   { path: "/assign-project", component: ProjectAssignment },
   { path: "/projects/:projectId/create-task", component: TaskCreation,
-    props: (route) => ({ projectId: route.params.projectId }),
+    props: (route) => ({ projectId:  parseInt(route.params.projectId) }),
   },
   { path: "/assign-task", component: TaskAssignment },
     { path: "/tasks", component: TaskList },
 
 { path: '/login', name: 'LoginFrm', component: Login },
     { path: "/add-user", component: AddUser },
+    {
+  path: "/test",
+  component: () => TestPage,
+}
 
 ];
 
@@ -37,3 +43,4 @@ const router = createRouter({
 });
 
 export default router;
+console.log(router.getRoutes());

@@ -49,25 +49,24 @@ export default {
     }
   },
   methods: {
-    async addTask() {
-      try {
-        const taskData = {
-          name: this.taskName,
-          description: this.description,
-          project: this.project.id,
-        };
-        const response = await axiosInstance.post("/tasks/", taskData);
-        alert("Task added successfully!");
-        this.taskName = "";
-        this.description = "";
-      } catch (error) {
-        console.error("Failed to add task:", error.response.data || error);
-        if (error.response && error.response.data) {
-          alert(JSON.stringify(error.response.data));
-        }
+  async addTask() {
+    try {
+      const taskData = {
+        name: this.taskName,
+        description: this.description,
+        project: this.project.id, // Ensure project ID is included
+      };
+      const response = await axiosInstance.post("/tasks/", taskData);
+      alert("Task added successfully!");
+    } catch (error) {
+      console.error("Failed to add task:", error.response || error);
+      if (error.response && error.response.data) {
+        alert(JSON.stringify(error.response.data));
       }
-    },
+    }
   },
+},
+
 };
 </script>
 
