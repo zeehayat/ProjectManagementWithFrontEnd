@@ -20,10 +20,13 @@ const routes = [
   { path: "/notifications", component: NotificationList },
     { path: "/create-project", component: ProjectCreation },
   { path: "/assign-project", component: ProjectAssignment },
-  { path: "/create-task", component: TaskCreation },
+  { path: "/projects/:projectId/create-task", component: TaskCreation,
+    props: (route) => ({ projectId: route.params.projectId }),
+  },
   { path: "/assign-task", component: TaskAssignment },
     { path: "/tasks", component: TaskList },
 
+{ path: '/login', name: 'LoginFrm', component: Login },
     { path: "/add-user", component: AddUser },
 
 ];

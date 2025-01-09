@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAdminUser
 from .models import (
     CommunicationPlatform, Project, ProjectOwner, Role,
     UserRoleAssignment, Permission, Notification, UserNotificationPreference, Task, TaskExtensionRequest,
-User
+    User
 )
 
 from .permissions import HasPermission
@@ -114,20 +114,15 @@ class ProjectDetailView(APIView):
 
 
 class TaskListCreateView(APIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        tasks = Task.objects.all()
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = TaskSerializer(data=request.data)
-        if serializer.is_valid():
-            task = serializer.save()
-            create_task_notification(task)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        project_id = self.request.query_params.get('project')
+        if project_id:
+            return self.queryset.filter(project_id=project_id)
+        return self.queryset
 
 
 class TaskDetailView(APIView):
@@ -188,6 +183,7 @@ class NotificationMarkAsReadView(UpdateAPIView):
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user, is_read=False)
 
+
 class TaskListView(ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
@@ -202,10 +198,17 @@ class TaskExtensionRequestView(ListCreateAPIView):
     queryset = TaskExtensionRequest.objects.all()
     serializer_class = TaskExtensionRequestSerializer
 
+
+class CreateUserView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = CreateUserSerializer
+    #permission_classes = [IsAdminUser]
+
 class AddUserView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = CreateUserSerializer
-    permission_classes = [IsAdminUser]
+    #permission_classes = [IsAdminUser]
+
 
 class UserListView(ListAPIView):
     queryset = User.objects.all()
