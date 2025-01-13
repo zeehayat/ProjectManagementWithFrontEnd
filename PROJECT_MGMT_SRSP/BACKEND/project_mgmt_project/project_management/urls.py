@@ -5,7 +5,7 @@ from .views import (
     RoleViewSet, UserRoleAssignmentViewSet, PermissionViewSet,
     NotificationViewSet, UserNotificationPreferenceViewSet, TaskListCreateView, TaskDetailView,
     RoleListCreateView, UserRoleAssignmentView, NotificationListView, NotificationMarkAsReadView, AddUserView,
-    UserListView, CreateUserView
+    UserListView, CreateUserView, UpdateNotificationPreferences
 )
 from .views import ProjectListCreateView, ProjectDetailView
 
@@ -32,6 +32,7 @@ custom_urlpatterns = [
     path('notifications/<int:pk>/read/', NotificationMarkAsReadView.as_view(), name='notification-mark-read'),
     path('users/', UserListView.as_view(), name='user-list'),
     path('users/add/', CreateUserView.as_view(), name='user-create'),
+path('update-notifications/', UpdateNotificationPreferences.as_view(), name='update-notifications'),
 
 
 ]

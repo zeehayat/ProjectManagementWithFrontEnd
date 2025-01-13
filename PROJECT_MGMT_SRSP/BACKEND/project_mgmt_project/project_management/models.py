@@ -12,6 +12,11 @@ class CommunicationPlatform(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @staticmethod
+    def get_default_in_app():
+        platform, created = CommunicationPlatform.objects.get_or_create(name="In-App")
+        return platform
+
     def __str__(self):
         return self.name
 
@@ -76,12 +81,18 @@ class Notification(models.Model):
 # User Notification Preferences
 class UserNotificationPreference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notification_preferences")
-    platform = models.ForeignKey(CommunicationPlatform, on_delete=models.CASCADE)
+    platforms = models.ManyToManyField(CommunicationPlatform, related_name="user_preferences")
     preference_order = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
     config = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.platforms.exists():
+            self.platforms.add(CommunicationPlatform.get_default_in_app())
+
 
 class Attachment(models.Model):
     file = models.FileField(upload_to="attachments/")

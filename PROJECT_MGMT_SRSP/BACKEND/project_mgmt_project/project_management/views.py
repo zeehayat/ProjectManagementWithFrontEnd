@@ -16,7 +16,8 @@ from .permissions import HasPermission
 from .serializers import (
     CommunicationPlatformSerializer, ProjectSerializer, ProjectOwnerSerializer,
     RoleSerializer, UserRoleAssignmentSerializer, PermissionSerializer,
-    NotificationSerializer, UserNotificationPreferenceSerializer, TaskSerializer, UserSerializer, CreateUserSerializer
+    NotificationSerializer, UserNotificationPreferenceSerializer, TaskSerializer, UserSerializer, CreateUserSerializer,
+    UpdateNotificationPreferencesSerializer
 )
 from .serializers import TaskExtensionRequestSerializer
 from .utils import create_task_notification
@@ -213,3 +214,19 @@ class AddUserView(CreateAPIView):
 class UserListView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer  # For listing users (without passwords)
+
+class UpdateNotificationPreferences(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        try:
+            preferences = user.notification_preferences
+        except UserNotificationPreference.DoesNotExist:
+            return Response({"detail": "User has no notification preferences."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UpdateNotificationPreferencesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(preferences, serializer.validated_data)
+            return Response({"detail": "Notification preferences updated successfully."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

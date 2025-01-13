@@ -65,7 +65,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'assigned_to', 'project', 'due_date', 'status', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'attachments', 'assigned_to', 'project', 'due_date', 'status',
+                  'created_at', 'updated_at']
 
     def validate(self, data):
         # if not data.get("name"):
@@ -78,7 +79,6 @@ class TaskSerializer(serializers.ModelSerializer):
         if not data.get("name"):
             raise serializers.ValidationError({"name": "This field is required."})
         return data
-
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
@@ -113,3 +113,33 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
+
+        def create(self, validated_data):
+            user = User.objects.create_user(
+                username=validated_data['username'],
+                email=validated_data['email'],
+                password=validated_data['password']
+            )
+            UserNotificationPreference.objects.create(user=user)
+            return user
+
+
+class UpdateNotificationPreferencesSerializer(serializers.Serializer):
+    platforms = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True
+    )
+
+    def update(self, instance, validated_data):
+        platform_ids = validated_data.get("platforms", [])
+        for platform_id in platform_ids:
+            platform = CommunicationPlatform.objects.get(id=platform_id)
+            instance.platforms.add(platform)
+        return instance
