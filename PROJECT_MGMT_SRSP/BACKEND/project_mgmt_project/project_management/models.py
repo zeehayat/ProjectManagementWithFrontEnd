@@ -80,13 +80,20 @@ class Notification(models.Model):
 
 # User Notification Preferences
 class UserNotificationPreference(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notification_preferences")
-    platforms = models.ManyToManyField(CommunicationPlatform, related_name="user_preferences")
+    user = models.OneToOneField(User,
+                                on_delete=models.CASCADE,
+                                related_name="notification_preferences"
+    )
+
     preference_order = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
-    config = models.JSONField(null=True, blank=True)
+    config = models.JSONField(default=dict, blank=True)
+    platforms = models.ManyToManyField(CommunicationPlatform, related_name="user_preferences")
+
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

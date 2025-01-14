@@ -140,6 +140,11 @@ class UpdateNotificationPreferencesSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         platform_ids = validated_data.get("platforms", [])
         for platform_id in platform_ids:
-            platform = CommunicationPlatform.objects.get(id=platform_id)
-            instance.platforms.add(platform)
-        return instance
+            try:
+                platform = CommunicationPlatform.objects.get(id=platform_id)
+                instance.platforms.add(platform)  # Use the RelatedManager's add() method
+            except CommunicationPlatform.DoesNotExist:
+                raise serializers.ValidationError(
+                    {"platforms": f"Platform with ID {platform_id} does not exist."}
+                )
+            return instance

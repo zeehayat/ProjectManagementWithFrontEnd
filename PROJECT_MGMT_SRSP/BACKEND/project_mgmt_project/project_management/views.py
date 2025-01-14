@@ -190,6 +190,7 @@ class TaskListView(ListCreateAPIView):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
+
 # class TaskDetailView(RetrieveUpdateAPIView):
 #     queryset = Task.objects.all()
 #     serializer_class = TaskSerializer
@@ -205,6 +206,7 @@ class CreateUserView(CreateAPIView):
     serializer_class = CreateUserSerializer
     #permission_classes = [IsAdminUser]
 
+
 class AddUserView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = CreateUserSerializer
@@ -214,6 +216,7 @@ class AddUserView(CreateAPIView):
 class UserListView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer  # For listing users (without passwords)
+
 
 class UpdateNotificationPreferences(APIView):
     permission_classes = [IsAuthenticated]
