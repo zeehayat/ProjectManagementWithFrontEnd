@@ -82,11 +82,22 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
-    attachments = AttachmentSerializer(many=True, read_only=False)
+    attachments = serializers.ListField(
+        child=serializers.FileField(), write_only=True, required=False
+    )
 
     class Meta:
         model = Task
         fields = ['name', 'description', 'assigned_to', 'attachments', 'gps_latitude', 'gps_longitude']
+
+    def update(self, instance, validated_data):
+        attachments = validated_data.get("attachments", [])
+        for attachment in attachments:
+            instance.attachments.create(file=attachment)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class TaskExtensionRequestSerializer(serializers.ModelSerializer):

@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.generics import ListAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -17,7 +18,7 @@ from .serializers import (
     CommunicationPlatformSerializer, ProjectSerializer, ProjectOwnerSerializer,
     RoleSerializer, UserRoleAssignmentSerializer, PermissionSerializer,
     NotificationSerializer, UserNotificationPreferenceSerializer, TaskSerializer, UserSerializer, CreateUserSerializer,
-    UpdateNotificationPreferencesSerializer
+    UpdateNotificationPreferencesSerializer, TaskUpdateSerializer
 )
 from .serializers import TaskExtensionRequestSerializer
 from .utils import create_task_notification
@@ -190,6 +191,10 @@ class TaskListView(ListCreateAPIView):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        return Task.objects.all()
+
 
 # class TaskDetailView(RetrieveUpdateAPIView):
 #     queryset = Task.objects.all()
@@ -233,3 +238,45 @@ class UpdateNotificationPreferences(APIView):
             serializer.update(preferences, serializer.validated_data)
             return Response({"detail": "Notification preferences updated successfully."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserTasksView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # Get all projects the user owns
+        owned_projects = ProjectOwner.objects.filter(user=user).values_list("project", flat=True)
+
+        # Tasks assigned to the user
+        assigned_to_user = Task.objects.filter(assigned_to=user).select_related("project")
+
+        # Tasks from projects owned by the user
+        assigned_by_user = Task.objects.filter(project__in=owned_projects).select_related("project")
+
+        # Group tasks by project
+        grouped_tasks = {}
+        for task in assigned_to_user.union(assigned_by_user):
+            project_name = task.project.name
+            if project_name not in grouped_tasks:
+                grouped_tasks[project_name] = []
+            grouped_tasks[project_name].append(TaskSerializer(task).data)
+
+        return Response(grouped_tasks)
+
+
+class TaskUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+    def patch(self, request, pk):
+        print(f"Request data: {request.data}")
+        try:
+            task = Task.objects.get(pk=pk)
+            serializer = TaskUpdateSerializer(task, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Task.DoesNotExist:
+            return Response({"detail": "Task not found."}, status=status.HTTP_404_NOT_FOUND)

@@ -129,7 +129,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Your Vue.js frontend
+    "http://localhost:5173",  # Vue.js frontend
 ]
 CORS_ALLOW_CREDENTIALS = True
 CELERY_BROKER_URL = "redis://localhost:6379/0"

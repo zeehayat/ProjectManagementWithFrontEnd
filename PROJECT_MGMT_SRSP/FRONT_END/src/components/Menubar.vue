@@ -20,7 +20,7 @@
         </li>
 
       <li><router-link to="/tasks">Tasks</router-link></li>
-        <li><router-link to="/create-task">Create Task</router-link></li>
+        <li><router-link to="/projects/1/create-task">Create Task</router-link></li>
       <li><router-link to="/add-user">Add User</router-link></li>
 
       </ul>

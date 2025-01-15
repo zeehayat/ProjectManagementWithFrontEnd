@@ -26,14 +26,20 @@ const routes = [
     props: (route) => ({ projectId:  parseInt(route.params.projectId) }),
   },
   { path: "/assign-task", component: TaskAssignment },
-    { path: "/tasks", component: TaskList },
+
 
 { path: '/login', name: 'LoginFrm', component: Login },
     { path: "/add-user", component: AddUser },
     {
   path: "/test",
   component: () => TestPage,
-}
+},
+    {
+  path: '/tasks',
+  name: 'UserTasks',
+  component: () => import('@/views/UserTasks.vue'),
+  meta: { requiresAuth: true },
+},
 
 ];
 
