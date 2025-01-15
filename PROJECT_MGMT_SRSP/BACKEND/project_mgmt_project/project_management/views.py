@@ -269,6 +269,7 @@ class UserTasksView(APIView):
 class TaskUpdateView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
+
     def patch(self, request, pk):
         print(f"Request data: {request.data}")
         try:
