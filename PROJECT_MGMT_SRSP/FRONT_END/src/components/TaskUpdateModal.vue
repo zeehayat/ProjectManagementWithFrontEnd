@@ -19,12 +19,6 @@
         <textarea v-model="assigneeNotes" class="w-full p-2 border rounded"></textarea>
       </div>
 
-      <!-- Assigned Person Notes -->
-      <div class="mb-4">
-        <label class="block font-medium mb-2">Assigned Person Notes</label>
-        <textarea v-model="assignedPersonNotes" class="w-full p-2 border rounded"></textarea>
-      </div>
-
       <!-- Attachments -->
       <div class="mb-4">
         <label class="block font-medium mb-2">Attachments</label>
@@ -33,7 +27,7 @@
 
       <!-- Actions -->
       <div class="flex justify-end gap-4">
-        <button @click="isVisible = false" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+        <button @click="closeModal" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
         <button @click="updateTask" class="px-4 py-2 bg-blue-500 text-white rounded">Update</button>
       </div>
     </div>
@@ -58,7 +52,6 @@ export default {
     return {
       status: "Pending",
       assigneeNotes: "",
-      assignedPersonNotes: "",
       attachments: [],
     };
   },
@@ -67,26 +60,30 @@ export default {
       this.attachments = Array.from(event.target.files);
     },
     async updateTask() {
-      const formData = new FormData();
-      formData.append("status", this.status);
-      formData.append("assignee_notes", this.assigneeNotes);
-      formData.append("assigned_person_notes", this.assignedPersonNotes);
-
-      this.attachments.forEach((file, index) => {
-        formData.append(`attachments[${index}]`, file);
-      });
-
       try {
-        await axiosInstance.patch(`/tasks/${this.taskId}/update/`, formData, {
+        const formData = new FormData();
+        formData.append("status", this.status);
+        formData.append("assignee_notes", this.assigneeNotes);
+        this.attachments.forEach((file, index) => {
+          formData.append(`attachments[${index}]`, file);
+        });
+
+        const response = await axiosInstance.patch(`/tasks/${this.taskId}/update/`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        alert("Task updated successfully!");
-        this.isVisible = false;
-        this.$emit("task-updated");
+
+        if (response.status === 200) {
+          alert("Task updated successfully!");
+          this.$emit("task-updated"); // Notify the parent component
+          this.closeModal(); // Close the modal
+        }
       } catch (error) {
         console.error("Failed to update task:", error.response || error);
         alert("Failed to update task.");
       }
+    },
+    closeModal() {
+      this.$emit("close"); // Emit an event to close the modal
     },
   },
 };

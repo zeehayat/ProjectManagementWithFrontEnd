@@ -40,7 +40,8 @@
     </div>
   </div>
   <!-- Task Update Modal -->
-  <TaskUpdateModal
+ <!-- Update Modal -->
+    <TaskUpdateModal
       v-if="isUpdateModalVisible"
       :taskId="selectedTaskId"
       :isVisible="isUpdateModalVisible"
@@ -96,7 +97,8 @@ export default {
       this.isUpdateModalVisible = true;
     },
     fetchTasks() {
-      // Re-fetch tasks after an update
+            this.isUpdateModalVisible = false; // Hide modal after task fetch
+
     },
   },
 };

@@ -88,14 +88,19 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['name', 'description', 'assigned_to', 'attachments', 'gps_latitude', 'gps_longitude']
+        fields = ["status", "assignee_notes", "assigned_person_notes", "attachments"]
 
     def update(self, instance, validated_data):
-        attachments = validated_data.get("attachments", [])
+        # Handle attachments separately
+        attachments = validated_data.pop("attachments", [])
         for attachment in attachments:
-            instance.attachments.create(file=attachment)
+            attachment_instance = Attachment.objects.create(file=attachment)
+            instance.attachments.add(attachment_instance)
+
+        # Update other fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+
         instance.save()
         return instance
 

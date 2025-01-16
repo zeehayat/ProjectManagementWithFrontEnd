@@ -119,7 +119,9 @@ class Task(models.Model):
     assigned_person_notes = models.TextField(blank=True, null=True)
     gps_latitude = models.FloatField(blank=True, null=True)
     gps_longitude = models.FloatField(blank=True, null=True)
+
     attachments = models.ManyToManyField(Attachment, blank=True, related_name="tasks")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

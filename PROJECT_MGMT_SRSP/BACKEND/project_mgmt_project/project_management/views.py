@@ -271,11 +271,12 @@ class TaskUpdateView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def patch(self, request, pk):
-        print(f"Request data: {request.data}")
+        print("Request Data:", request.data)  # Debug incoming data
         try:
             task = Task.objects.get(pk=pk)
             serializer = TaskUpdateSerializer(task, data=request.data, partial=True)
             if serializer.is_valid():
+                print("Validated Data:", serializer.validated_data)  # Debug validated data
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
