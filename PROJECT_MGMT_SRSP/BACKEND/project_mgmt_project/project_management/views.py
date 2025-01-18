@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+from django.utils import timezone
+
 from rest_framework.permissions import IsAdminUser
 from .models import (
     CommunicationPlatform, Project, ProjectOwner, Role,
@@ -201,9 +203,9 @@ class TaskListView(ListCreateAPIView):
 #     serializer_class = TaskSerializer
 #     permission_classes = [IsAuthenticated]
 
-class TaskExtensionRequestView(ListCreateAPIView):
-    queryset = TaskExtensionRequest.objects.all()
-    serializer_class = TaskExtensionRequestSerializer
+# class TaskExtensionRequestView(ListCreateAPIView):
+#     queryset = TaskExtensionRequest.objects.all()
+#     serializer_class = TaskExtensionRequestSerializer
 
 
 class CreateUserView(CreateAPIView):
@@ -282,3 +284,79 @@ class TaskUpdateView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Task.DoesNotExist:
             return Response({"detail": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class DashboardDataView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # Task Summary
+        task_summary = {
+            "pending": Task.objects.filter(status="Pending", assigned_to=user).count(),
+            "in_progress": Task.objects.filter(status="In Progress", assigned_to=user).count(),
+            "completed": Task.objects.filter(status="Completed", assigned_to=user).count(),
+        }
+
+        # Project Summary
+        projects = Project.objects.filter(owners__user=user).distinct()
+        project_summary = {
+            "total_projects": projects.count(),
+            "recent_projects": [
+                {"name": project.name, "updated_at": project.updated_at} for project in projects.order_by("-updated_at")[:5]
+            ],
+        }
+
+        # Notifications
+        overdue_tasks = Task.objects.filter(
+            due_date__lt=timezone.now(),
+            status__in=["Pending", "In Progress"],
+            assigned_to=user,
+        ).select_related("assigned_to")
+
+        # Add "assigned_to" field with conditional formatting
+        overdue_task_data = [
+            {
+                "name": task.name,
+                "due_date": task.due_date,
+                "assigned_to": "Assigned to me" if task.assigned_to == user else task.assigned_to.username,
+            }
+            for task in overdue_tasks
+        ]
+
+        return Response({
+            "task_summary": task_summary,
+            "project_summary": project_summary,
+            "overdue_tasks": overdue_task_data,
+        })
+
+class TaskExtensionRequestView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, task_id):
+        try:
+            task = Task.objects.get(pk=task_id)
+            data = request.data
+            data['task'] = task.id
+            data['requested_by'] = request.user.id
+            serializer = TaskExtensionRequestSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Task.DoesNotExist:
+            return Response({"detail": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class TaskExtensionRequestApprovalView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, request_id):
+        try:
+            extension_request = TaskExtensionRequest.objects.get(pk=request_id)
+            serializer = TaskExtensionRequestSerializer(extension_request, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except TaskExtensionRequest.DoesNotExist:
+            return Response({"detail": "Extension request not found."}, status=status.HTTP_404_NOT_FOUND)

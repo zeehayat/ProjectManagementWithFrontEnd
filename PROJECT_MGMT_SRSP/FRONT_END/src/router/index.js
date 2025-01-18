@@ -40,6 +40,13 @@ const routes = [
   component: () => import('@/views/UserTasks.vue'),
   meta: { requiresAuth: true },
 },
+    {
+  path: "/dashboard",
+  name: "Dashboard",
+  component: () => import("@/views/Dashboard.vue"),
+  meta: { requiresAuth: true },
+},
+
 
 ];
 

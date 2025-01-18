@@ -105,10 +105,10 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 
-class TaskExtensionRequestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TaskExtensionRequest
-        fields = "__all__"
+# class TaskExtensionRequestSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TaskExtensionRequest
+#         fields = "__all__"
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -164,3 +164,8 @@ class UpdateNotificationPreferencesSerializer(serializers.Serializer):
                     {"platforms": f"Platform with ID {platform_id} does not exist."}
                 )
             return instance
+
+class TaskExtensionRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskExtensionRequest
+        fields = "__all__"

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.timezone import now
 
 
 # Communication Platforms
@@ -141,4 +142,32 @@ class TaskExtensionRequest(models.Model):
                               default="Pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old_status = None if is_new else TaskExtensionRequest.objects.get(pk=self.pk).status
 
+        super().save(*args, **kwargs)  # Save the request
+
+        # Log the extension request action in TaskHistory
+        if is_new:
+            TaskHistory.objects.create(
+                task=self.task,
+                changed_by=self.requested_by,
+                change=f"Extension request for {self.additional_days} days created with reason: {self.reason}"
+            )
+        elif old_status != self.status:
+            TaskHistory.objects.create(
+                task=self.task,
+                changed_by=self.requested_by,
+                change=f"Extension request status changed from {old_status} to {self.status}"
+            )
+
+
+class TaskHistory(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='history')
+    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    timestamp = models.DateTimeField(default=now)
+    change = models.TextField()
+
+    def __str__(self):
+        return f"Change to {self.task.name} at {self.timestamp}"
