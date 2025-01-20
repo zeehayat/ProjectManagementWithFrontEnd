@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission
-from .models import UserRoleAssignment, Role
+from .models.user_role_assignment import UserRoleAssignment
 from rest_framework.permissions import BasePermission
 
 

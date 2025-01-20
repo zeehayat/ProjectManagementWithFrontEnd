@@ -1,6 +1,6 @@
 from celery import shared_task
-from .models import Task
-from .models import Notification
+from .models.tasks import Task
+from .models.notification import Notification
 
 @shared_task
 def check_late_tasks():

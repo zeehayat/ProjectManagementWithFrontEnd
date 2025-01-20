@@ -22,7 +22,8 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from project_management.views import TaskListCreateView, TaskDetailView
+from project_management.views.task_list_create_view import TaskListCreateView
+from project_management.views.task_detail_view import  TaskDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),

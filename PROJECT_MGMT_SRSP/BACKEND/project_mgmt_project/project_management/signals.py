@@ -1,6 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Task, UserNotificationPreference, CommunicationPlatform
+from .models.tasks import Task
+from .models.user_notification_preferences import UserNotificationPreference
+from .models.communication_platform import  CommunicationPlatform
 from .utils import create_task_notification
 from django.contrib.auth.models import User
 @receiver(post_save, sender=Task)
