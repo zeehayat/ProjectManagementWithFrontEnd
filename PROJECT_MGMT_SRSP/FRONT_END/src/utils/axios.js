@@ -46,5 +46,16 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
+export const logout = async () => {
+  try {
+    const refreshToken = localStorage.getItem("refresh");
+    await axiosInstance.post("logout/", { refresh_token: refreshToken });
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    window.location.href = "/login"; // Redirect to login page
+  } catch (error) {
+    console.error("Logout failed:", error.response || error);
+    alert("Logout failed. Please try again.");
+  }
+};
 export default axiosInstance;

@@ -1,6 +1,7 @@
 <template>
+
   <div class="p-6 bg-gray-100 min-h-screen">
-    <h1 class="text-2xl font-bold mb-6">My Tasks</h1>
+    <h1 class="text-2xl font-bold mb-6">My Tasks </h1>
 
     <!-- Filters -->
     <div class="mb-6 flex gap-4">
@@ -27,7 +28,7 @@
           <p>Status: {{ task.status }}</p>
           <p>Assigned By: {{ task.assigned_by?.username || "N/A" }}</p>
           <p>Due Date: {{ task.due_date || "N/A" }}</p>
-           <button @click="openUpdateModal(task.id)" class="px-4 py-2 bg-green-500 text-white rounded">
+           <button @click="openUpdateModal(task.id)" class="px-4 py-2 bg-green-500 text-white rounded" v-if="task.status!='Completed'">
           Update Task
         </button>
         </div>

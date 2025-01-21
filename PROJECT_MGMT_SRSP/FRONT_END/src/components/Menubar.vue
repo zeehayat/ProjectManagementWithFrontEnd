@@ -35,6 +35,13 @@
               Tasks
             </router-link>
           </li>
+          <li>
+            <a  @click="handleLogout"
+              class="block p-3 rounded text-gray-700 hover:bg-gray-200"
+            >
+              Logout
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -45,25 +52,51 @@
         <button @click="toggleMenu" class="p-2 mr-4">
           <span class="text-white">&#9776;</span>
         </button>
-        <h1 class="text-xl font-bold">Project Management</h1>
+        <h1 class="text-xl font-bold text-white">SRSP Project Management Application</h1>
       </header>
       <main class="p-6">
         <router-view />
       </main>
+      <div>
+    <button @click="toggleDropdown">Notifications ({{ notifications.length }})</button>
+    <div v-if="isDropdownVisible">
+      <ul>
+        <li v-for="notification in notifications" :key="notification.id">
+          {{ notification.message }}
+        </li>
+      </ul>
+    </div>
+  </div>
     </div>
   </div>
 </template>
 <script>
+import { logout } from "@/utils/axios";
+import axiosInstance from "@/utils/axios";
 export default {
   data() {
     return {
-      isOpen: false, // Controls the Menubar visibility
+      isOpen: false,
+       notifications: [],
+      isDropdownVisible: false,
+      // Controls the Menubar visibility
     };
+  },
+   async created() {
+    const response = await axiosInstance.get("/notifications/");
+    this.notifications = response.data;
   },
   methods: {
     toggleMenu() {
       this.isOpen = !this.isOpen;
     },
+    toggleDropdown() {
+      this.isDropdownVisible = !this.isDropdownVisible;
+    },
+    async handleLogout() {
+      await logout();
+    },
+
   },
 };
 </script>
@@ -74,10 +107,7 @@ body {
   color: #333; /* Dark gray */
 }
 
-h1,
-a {
-  color: black;
-}
+
 
 nav ul li a {
   color: gray;

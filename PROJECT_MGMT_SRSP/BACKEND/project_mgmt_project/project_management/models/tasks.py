@@ -35,18 +35,27 @@ class Task(models.Model):
 
         super().save(*args, **kwargs)  # Save the instance
 
+        # Notify the assigned user if the task is new or reassigned
         if is_new or (old_instance and old_instance.assigned_to != self.assigned_to):
-            # Notify assigned user if the task is new or reassigned
             if self.assigned_to:
                 Notification.objects.create(
                     user=self.assigned_to,
-                    message=f"You have been assigned a new task: {self.name}."
+                    message=f"You have been assigned a new task: {self.name}.",
                 )
 
-        # Notify the task assigner if notes or attachments were updated
+        # Notify the assigner about task updates
         if old_instance:
+            changes = []
             if old_instance.assignee_notes != self.assignee_notes:
+                changes.append("notes updated")
+            if old_instance.status != self.status:
+                changes.append(f"status changed to {self.status}")
+            if old_instance.attachments.count() != self.attachments.count():
+                changes.append("attachments updated")
+
+            if changes and self.project.owners.exists():
+                assigner = self.project.owners.first().user
                 Notification.objects.create(
-                    user=self.project.owners.first().user,
-                    message=f"The assignee updated notes for the task: {self.name}."
+                    user=assigner,
+                    message=f"The task '{self.name}' was updated by {self.assigned_to.username}: {', '.join(changes)}.",
                 )
