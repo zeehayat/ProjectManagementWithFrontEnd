@@ -37,6 +37,7 @@ router.register(r'user-notification-preferences', UserNotificationPreferenceView
 # Explicit URL patterns
 custom_urlpatterns = [
     path('projects/', ProjectListCreateView.as_view(), name='project-list-create'),
+    #path('projects/all/', ProjectViewSet.as_view(), name='project-list-show'),
     path('projects/<int:pk>/', ProjectDetailView.as_view(), name='project-detail'),
     path('tasks/', TaskListCreateView.as_view(), name='task-list-create'),
     path('tasks/<int:pk>/', TaskDetailView.as_view(), name='task-detail'),
