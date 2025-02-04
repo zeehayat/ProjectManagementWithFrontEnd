@@ -6,7 +6,7 @@
     <!-- Filters -->
     <div class="mb-6 flex gap-4">
       <select v-model="statusFilter" class="p-2 border rounded">
-        <option value="">All Statuses</option>
+        <option value="">All Statuses T</option>
         <option value="Pending">Pending</option>
         <option value="In Progress">In Progress</option>
         <option value="Completed">Completed</option>
@@ -30,6 +30,9 @@
           <p>Due Date: {{ task.due_date || "N/A" }}</p>
            <button @click="openUpdateModal(task.id)" class="px-4 py-2 bg-green-500 text-white rounded" v-if="task.status!='Completed'">
           Update Task
+        </button>
+          <button class="px-4 py-2 bg-green-500 text-white rounded" >
+          View Details
         </button>
         </div>
       </div>

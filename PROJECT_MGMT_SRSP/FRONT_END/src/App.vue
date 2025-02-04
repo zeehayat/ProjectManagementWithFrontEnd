@@ -9,15 +9,18 @@
 </template>
 
 <script>
+import { computed } from "vue";
+import { useStore } from "vuex";
 import Menubar from "./components/Menubar.vue";
-import { mapState } from "vuex";
 
 export default {
   components: {
     Menubar,
   },
-  computed: {
-    ...mapState(["isAuthenticated"]), // Maps isAuthenticated from store
+  setup() {
+    const store = useStore();
+    const isAuthenticated = computed(() => store.state.isAuthenticated);
+    return { isAuthenticated };
   },
 };
 </script>

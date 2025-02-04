@@ -16,7 +16,7 @@ export default createStore({
     },
     logout({ commit }) {
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      //localStorage.removeItem("refreshToken");
       commit("setAuthenticated", false);
     },
   },
